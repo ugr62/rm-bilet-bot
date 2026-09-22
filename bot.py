@@ -12,7 +12,7 @@ from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 # =========================================================
 TELEGRAM_TOKEN = "8811575691:AAHWtPi7hYLrYQ6CufX81HPxI9YGgIQ_YMI"
 # Otomatik bildirimlerin atılacağı Telegram Grup Chat ID'si (Eksi işaretiyle başlar, Örn: "-100123456789")
-CHAT_ID = "5356646775" 
+CHAT_ID = "-5356646775" 
 
 REAL_MADRID_TICKETS_URL = "https://www.realmadrid.com/en-US/tickets"
 
