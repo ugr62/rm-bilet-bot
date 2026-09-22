@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 
-TELEGRAM_TOKEN = "BURAYA_BOT_TOKEN_GIRIN"
+TELEGRAM_TOKEN = "8811575691:AAHWtPi7hYLrYQ6CufX81HPxI9YGgIQ_YMI"
 REAL_MADRID_TICKETS_URL = "https://www.realmadrid.com/en-US/tickets"
 
 logging.basicConfig(
