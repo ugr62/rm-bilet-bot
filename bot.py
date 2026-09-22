@@ -1,5 +1,8 @@
+import os
+import threading
 import logging
 import requests
+from http.server import HTTPServer, BaseHTTPRequestHandler
 from bs4 import BeautifulSoup
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
@@ -11,6 +14,18 @@ logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     level=logging.INFO
 )
+
+# Render'ın Web Service için aradığı basit HTTP sunucusu
+class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(b"Bot Active")
+
+def run_http_server():
+    port = int(os.environ.get("PORT", 8080))
+    server = HTTPServer(('0.0.0.0', port), SimpleHTTPRequestHandler)
+    server.serve_forever()
 
 def check_tickets_status():
     headers = {
@@ -55,6 +70,10 @@ async def yardim(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(help_text)
 
 if __name__ == '__main__':
+    # HTTP sunucusunu arka planda başlat
+    threading.Thread(target=run_http_server, daemon=True).start()
+    
+    # Telegram Botunu Başlat
     app = ApplicationBuilder().token(TELEGRAM_TOKEN).build()
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("kontrol", kontrol))
