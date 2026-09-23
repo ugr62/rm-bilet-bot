@@ -14,7 +14,7 @@ from telegram.ext import (
 )
 
 # =========================================================
-# BİLGİLERİNİZİ BURAYA GİRİN
+# BİLGİLERİNİZ
 # =========================================================
 TELEGRAM_TOKEN = "8811575691:AAHWtPi7hYLrYQ6CufX81HPxI9YGgIQ_YMI"
 CHAT_ID = "-5356646775"
@@ -38,7 +38,7 @@ def run_http_server():
     server.serve_forever()
 
 def check_tickets_status():
-    """Bilet durumunu kontrol eder ve (mesaj, bilet_satista_mi) döndürür."""
+    """Bilet durumunu kontrol eder."""
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
     }
@@ -51,7 +51,7 @@ def check_tickets_status():
             if "buy tickets" in page_text or "tickets available" in page_text:
                 msg = (
                     "🚨 **MÜJDE! Real Madrid - Villarreal Biletleri Satışta!** 🚨\n\n"
-                    f"Hemen satın almak için tıkla:\n{REAL_MADRID_TICKETS_URL}"
+                    f"Satın almak için: {REAL_MADRID_TICKETS_URL}"
                 )
                 return msg, True
             else:
@@ -63,7 +63,7 @@ def check_tickets_status():
         return f"❌ Sayfa kontrol edilirken bir hata oluştu: {e}", False
 
 async def periyodik_bilet_kontrolu(context: ContextTypes.DEFAULT_TYPE):
-    """Saatlik kontroller"""
+    """Saatlik otomatik kontroller"""
     mesaj, bilet_bulundu = check_tickets_status()
     
     if bilet_bulundu:
@@ -83,20 +83,18 @@ async def periyodik_bilet_kontrolu(context: ContextTypes.DEFAULT_TYPE):
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     welcome_text = (
-        "🤖 **Real Madrid Bilet Takip Botu Aktif!**\n\n"
-        "Komutlar veya Kelimeler:\n"
-        "▫️ `/kontrol` veya grupta **kontrol** yazarak anlık sorgulayabilirsiniz."
+        "🤖 **Real Madrid Bilet Takip Botu**\n\n"
+        "Komutlar:\n"
+        "▫️ `/kontrol` veya grupta **kontrol** yazarak sorgulama yapabilirsiniz."
     )
     await update.message.reply_text(welcome_text, parse_mode="Markdown")
 
 async def manuel_kontrol(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Hem /kontrol komutuna hem de içinde 'kontrol' geçen mesajlara yanıt verir"""
     await update.message.reply_text("🔍 Bilet durumu kontrol ediliyor, lütfen bekleyin...")
     durum_mesaji, _ = check_tickets_status()
     await update.message.reply_text(durum_mesaji, parse_mode="Markdown")
 
 async def kelime_dinleyici(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """Grupta 'kontrol', 'bilet' veya 'durum' yazılırsa otomatik yanıt verir"""
     if not update.message or not update.message.text:
         return
     text = update.message.text.lower()
@@ -109,14 +107,12 @@ if __name__ == '__main__':
     app = ApplicationBuilder().token(TELEGRAM_TOKEN).build()
     
     job_queue = app.job_queue
-    job_queue.run_repeating(periyodik_bilet_kontrolu, interval=3600, first=10)
+    if job_queue:
+        job_queue.run_repeating(periyodik_bilet_kontrolu, interval=3600, first=10)
 
-    # Komut Dinleyiciler
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("kontrol", manuel_kontrol))
-    
-    # Metin Dinleyici (Grupta 'kontrol', 'bilet' vb. yazılınca çalışır)
     app.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), kelime_dinleyici))
 
-    print("Bot ve saatlik zamanlayıcı çalışmaya başladı...")
+    print("Bot çalışmaya başladı...")
     app.run_polling(drop_pending_updates=True)
