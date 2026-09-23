@@ -16,7 +16,7 @@ from telegram.ext import (
 # =========================================================
 # BİLGİLERİNİZ
 # =========================================================
-TELEGRAM_TOKEN = "8811575691:AAHWtPi7hYLrYQ6CufX81HPxI9YGgIQ_YMI"
+TELEGRAM_TOKEN = "8811575691:AAHipEoPFUqXlA2AYW9fC_1gRnV4RF_QdaU"
 CHAT_ID = "-5356646775"
 
 REAL_MADRID_TICKETS_URL = "https://www.realmadrid.com/en-US/tickets"
